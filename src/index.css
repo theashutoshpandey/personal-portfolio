@@ -1,0 +1,93 @@
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap");
+@import "tailwindcss";
+
+:root {
+  --bg-0: #05070f;
+  --bg-1: #0a1224;
+  --bg-2: #101b34;
+  --accent-1: #22d3ee;
+  --accent-2: #4ade80;
+  --accent-3: #38bdf8;
+  --text-1: #e6f1ff;
+  --text-2: #b7c6e4;
+  --font-body: "Space Grotesk", sans-serif;
+  --font-display: "Orbitron", "Space Grotesk", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+  font-family: var(--font-body);
+}
+
+body {
+  margin: 0 !important;
+  padding: 0;
+  font-family: var(--font-body);
+  background:
+    radial-gradient(800px 500px at 15% 10%, rgba(34, 211, 238, 0.18), transparent 60%),
+    radial-gradient(700px 400px at 85% 20%, rgba(74, 222, 128, 0.14), transparent 60%),
+    linear-gradient(180deg, var(--bg-0) 0%, var(--bg-1) 55%, var(--bg-2) 100%);
+  color: var(--text-1);
+  overflow-x: hidden;
+  cursor: none;
+}
+
+a,
+button,
+input,
+textarea {
+  cursor: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: 0.02em;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #05070f;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--accent-1), var(--accent-2));
+  border-radius: 10px;
+  box-shadow: 0 0 12px rgba(34, 211, 238, 0.35);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #3fe1f2, #5bf0a0);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.glass-effect {
+  background: rgba(8, 16, 30, 0.68);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(34, 211, 238, 0.18);
+  box-shadow:
+    0 8px 32px rgba(2, 8, 23, 0.55),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
