@@ -62,6 +62,7 @@ const getTodayStamp = () => {
 export default function Contact() {
   const formRef = useRef();
   const [error, setError] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
   const [done, setDone] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionCount, setSubmissionCount] = useState(0);
@@ -109,38 +110,49 @@ export default function Contact() {
     }
   };
 
-  const validateForm = () => {
+  const validateField = (name, rawValue) => {
+    const value = (rawValue || "").trim();
+
+    if (name === "entry.2005620554") {
+      return !value || value.length < 2 ? "Please enter your full name." : null;
+    }
+
+    if (name === "entry.1045781291") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return !value || !emailRegex.test(value)
+        ? "Please enter a valid email address."
+        : null;
+    }
+
+    if (name === "entry.1166974658") {
+      return !value || value.length < 3
+        ? "Please add a short subject for your message."
+        : null;
+    }
+
+    if (name === "entry.839337160") {
+      return !value || value.length < 10
+        ? "Please write at least 10 characters in your message."
+        : null;
+    }
+
+    return null;
+  };
+
+  const validateAllFields = () => {
     const form = formRef.current;
     if (!form) return false;
 
-    const name = form["entry.2005620554"]?.value?.trim();
-    const email = form["entry.1045781291"]?.value?.trim();
-    const subject = form["entry.1166974658"]?.value?.trim();
-    const message = form["entry.839337160"]?.value?.trim();
-
-    if (!name || name.length < 2) {
-      setError("Please enter your full name.");
-      return false;
+    const nextFieldErrors = {};
+    for (const field of contactConfig.fields) {
+      const message = validateField(field.name, form[field.name]?.value);
+      if (message) {
+        nextFieldErrors[field.name] = message;
+      }
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email || !emailRegex.test(email)) {
-      setError("Please enter a valid email address.");
-      return false;
-    }
-
-    if (!subject || subject.length < 3) {
-      setError("Please add a short subject for your message.");
-      return false;
-    }
-
-    if (!message || message.length < 10) {
-      setError("Please write at least 10 characters in your message.");
-      return false;
-    }
-
-    setError(null);
-    return true;
+    setFieldErrors(nextFieldErrors);
+    return Object.keys(nextFieldErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
@@ -151,7 +163,7 @@ export default function Contact() {
       return;
     }
 
-    if (!validateForm()) {
+    if (!validateAllFields()) {
       return;
     }
 
@@ -182,8 +194,24 @@ export default function Contact() {
     }
   };
 
-  const handleInputChange = () => {
+  const handleInputChange = (e) => {
     if (done) setDone(false);
+    const fieldName = e.target.name;
+    if (fieldErrors[fieldName]) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        [fieldName]: null,
+      }));
+    }
+  };
+
+  const handleFieldBlur = (e) => {
+    const fieldName = e.target.name;
+    const validationMessage = validateField(fieldName, e.target.value);
+    setFieldErrors((prev) => ({
+      ...prev,
+      [fieldName]: validationMessage,
+    }));
   };
 
   const handleFlipBack = () => {
@@ -224,25 +252,25 @@ export default function Contact() {
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="flex justify-center"
+          className="flex justify-center px-1 sm:px-0"
         >
           <div className="w-full max-w-xl mx-auto [perspective:1200px]">
             <motion.div
               animate={{ rotateY: done ? 180 : 0 }}
               transition={{ duration: 0.7, ease: "easeInOut" }}
               style={{ transformStyle: "preserve-3d" }}
-              className="relative min-h-[640px] sm:min-h-[620px]"
+              className="relative min-h-[680px] sm:min-h-[620px]"
             >
               <div
                 style={{ backfaceVisibility: "hidden" }}
-                className={`absolute inset-0 glass-effect rounded-2xl p-5 sm:p-6 md:p-7 ${
+                className={`absolute inset-0 glass-effect rounded-2xl p-4 sm:p-6 md:p-7 flex flex-col ${
                   done ? "pointer-events-none" : ""
                 }`}
               >
-                <h4 className="text-xl font-semibold text-white mb-1 text-left">
+                <h4 className="text-lg sm:text-xl font-semibold text-white mb-1 text-left">
                   Send a message
                 </h4>
-                <p className="text-xs text-slate-300 mb-4">
+                <p className="text-xs text-slate-300 mb-3 sm:mb-4">
                   Please share your details and message.
                 </p>
 
@@ -255,7 +283,7 @@ export default function Contact() {
                     hidden: {},
                     visible: { transition: { staggerChildren: 0.05 } },
                   }}
-                  className="flex flex-col gap-5 w-full"
+                  className="flex flex-col gap-4 sm:gap-5 w-full flex-1"
                 >
                   {contactConfig.fields.map((field) => (
                     <motion.div
@@ -278,7 +306,12 @@ export default function Contact() {
                           placeholder={field.placeholder}
                           required
                           onChange={handleInputChange}
-                          className="bg-transparent border border-white/15 text-white px-3 py-3 rounded-lg placeholder:text-slate-400 focus:border-cyan-300 focus:ring-2 focus:ring-cyan-400/40 focus:outline-none transition-colors resize-none"
+                          onBlur={handleFieldBlur}
+                          className={`bg-transparent border text-white px-3 py-2.5 sm:py-3 rounded-lg placeholder:text-slate-400 focus:ring-2 focus:outline-none transition-colors resize-none ${
+                            fieldErrors[field.name]
+                              ? "border-red-400 focus:border-red-400 focus:ring-red-400/30"
+                              : "border-white/15 focus:border-cyan-300 focus:ring-cyan-400/40"
+                          }`}
                         />
                       ) : (
                         <input
@@ -288,8 +321,18 @@ export default function Contact() {
                           placeholder={field.placeholder}
                           required
                           onChange={handleInputChange}
-                          className="bg-transparent border border-white/15 text-white px-3 py-3 rounded-lg placeholder:text-slate-400 focus:border-cyan-300 focus:ring-2 focus:ring-cyan-400/40 focus:outline-none transition-colors"
+                          onBlur={handleFieldBlur}
+                          className={`bg-transparent border text-white px-3 py-2.5 sm:py-3 rounded-lg placeholder:text-slate-400 focus:ring-2 focus:outline-none transition-colors ${
+                            fieldErrors[field.name]
+                              ? "border-red-400 focus:border-red-400 focus:ring-red-400/30"
+                              : "border-white/15 focus:border-cyan-300 focus:ring-cyan-400/40"
+                          }`}
                         />
+                      )}
+                      {fieldErrors[field.name] && (
+                        <p className="text-xs text-red-400 mt-1">
+                          {fieldErrors[field.name]}
+                        </p>
                       )}
                     </motion.div>
                   ))}
@@ -312,7 +355,7 @@ export default function Contact() {
                       isSubmitting || hasReachedLimit ? {} : { y: -1, scale: 1.01 }
                     }
                     whileTap={isSubmitting || hasReachedLimit ? {} : { scale: 0.99 }}
-                    className="mt-1 inline-flex items-center justify-center bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 px-7 py-3 cursor-pointer rounded-full text-sm font-semibold shadow-[0_8px_30px_rgba(34,211,238,0.35)] transition duration-200 disabled:opacity-60 disabled:cursor-not-allowed hover:from-cyan-300 hover:to-emerald-300 w-full"
+                    className="mt-2 sm:mt-auto flex w-full items-center justify-center self-stretch bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 px-6 sm:px-7 py-2.5 sm:py-3 cursor-pointer rounded-full text-sm font-semibold shadow-[0_8px_30px_rgba(34,211,238,0.35)] transition duration-200 disabled:opacity-60 disabled:cursor-not-allowed hover:from-cyan-300 hover:to-emerald-300"
                   >
                     {isSubmitting
                       ? "Sending..."
@@ -325,16 +368,18 @@ export default function Contact() {
 
               <div
                 style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
-                className="absolute inset-0 glass-effect rounded-2xl p-5 sm:p-6 md:p-7 flex flex-col justify-center items-center text-center"
+                className="absolute inset-0 glass-effect rounded-2xl p-4 sm:p-6 md:p-7 flex flex-col justify-center items-center text-center"
               >
                 <div className="h-16 w-16 rounded-full bg-emerald-400/20 border border-emerald-300/40 flex items-center justify-center text-xl font-bold text-emerald-200 shadow-[0_0_24px_rgba(52,211,153,0.25)] mb-4">
                   OK
                 </div>
-                <h4 className="text-2xl font-semibold text-white mb-2">Message sent</h4>
-                <p className="text-slate-300 text-sm mb-5 max-w-sm">
+                <h4 className="text-xl sm:text-2xl font-semibold text-white mb-2">
+                  Message sent
+                </h4>
+                <p className="text-slate-300 text-sm mb-4 sm:mb-5 max-w-sm">
                   Thanks for reaching out. Your message has been submitted successfully.
                 </p>
-                <p className="text-xs text-emerald-200 mb-6">
+                <p className="text-xs text-emerald-200 mb-5 sm:mb-6">
                   I will get back to you shortly.
                 </p>
 

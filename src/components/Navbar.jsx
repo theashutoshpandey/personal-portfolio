@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link as ScrollLink } from "react-scroll";
 import { HiMenu, HiX } from "react-icons/hi";
 import { AnimatePresence, motion } from "framer-motion";
@@ -17,14 +17,27 @@ export default function Navbar() {
   const [activeSection, setActiveSection] = useState("home");
 
   const toggleMenu = () => {
-    setIsOpen((prev) => {
-      const newState = !prev;
-      if (newState) {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }
-      return newState;
-    });
+    setIsOpen((prev) => !prev);
   };
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const onKeyDown = (event) => {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [isOpen]);
 
   return (
     <React.Fragment>
@@ -84,7 +97,12 @@ export default function Navbar() {
         </div>
         {/* Humburger menu */}
         <div className="md:hidden flex items-center">
-          <button onClick={toggleMenu}>
+          <button
+            onClick={toggleMenu}
+            aria-label={isOpen ? "Close menu" : "Open menu"}
+            aria-expanded={isOpen}
+            className="h-11 w-11 rounded-full border border-white/10 bg-white/5 flex items-center justify-center active:scale-95 transition-transform"
+          >
             {isOpen ? <HiX size={28} /> : <HiMenu size={28} />}
           </button>
         </div>
@@ -92,59 +110,73 @@ export default function Navbar() {
 
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="md:hidden px-4 pb-5 bg-[#070b14]/95 backdrop-blur-md relative z-50 border-b border-white/10"
-          >
-          <ul className="flex flex-col gap-4">
-            {menuItem.map((menu) => (
-              <li key={menu.name}>
-                <ScrollLink
-                  to={menu.redirect}
-                  spy={true}
-                  onClick={() => {
-                    setActiveSection(menu.redirect);
-                    setIsOpen(false);
-                  }}
-                  onSetActive={() => setActiveSection(menu.redirect)}
-                  smooth={true}
-                  duration={500}
-                  offset={-80}
-                  className={`block font-medium cursor-pointer px-3 py-2 rounded-lg transition-all duration-300 ${
-                    activeSection === menu.redirect
-                      ? "text-cyan-200 border-l-2 border-cyan-300 bg-cyan-400/10"
-                      : "text-slate-100 hover:text-white hover:bg-white/5"
-                  }`}
-                >
-                  {menu.name}
-                </ScrollLink>
-              </li>
-            ))}
+          <>
+            <motion.button
+              type="button"
+              aria-label="Close menu overlay"
+              onClick={() => setIsOpen(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="md:hidden fixed inset-0 top-20 z-40 bg-black/35 backdrop-blur-[1px]"
+            />
 
-            {/* GitHub Button for mobile */}
-            <div className="flex flex-col gap-2 pt-2">
-              <a
-                href="https://github.com/theashutoshpandey"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="border border-cyan-400 bg-transparent text-cyan-300 rounded-3xl cursor-pointer px-4 py-2 text-center text-sm font-medium transition-colors duration-200 hover:bg-cyan-400 hover:text-slate-950"
-              >
-                GitHub
-              </a>
-              <a
-                href="https://www.linkedin.com/in/ashutosh-pandey-7b9424221/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="border border-emerald-400 bg-transparent text-emerald-300 rounded-3xl cursor-pointer px-4 py-2 text-center text-sm font-medium transition-colors duration-200 hover:bg-emerald-400 hover:text-slate-950"
-              >
-                LinkedIn
-              </a>
-            </div>
-          </ul>
-          </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.22, ease: "easeOut" }}
+              className="md:hidden fixed inset-x-0 top-20 z-50 px-4"
+            >
+              <div className="max-h-[calc(100vh-6.5rem)] overflow-y-auto rounded-2xl border border-white/10 bg-[#070b14]/95 backdrop-blur-md p-4 shadow-[0_14px_40px_rgba(2,8,23,0.5)]">
+                <ul className="flex flex-col gap-2">
+                  {menuItem.map((menu) => (
+                    <li key={menu.name}>
+                      <ScrollLink
+                        to={menu.redirect}
+                        spy={true}
+                        onClick={() => {
+                          setActiveSection(menu.redirect);
+                          setIsOpen(false);
+                        }}
+                        onSetActive={() => setActiveSection(menu.redirect)}
+                        smooth={true}
+                        duration={500}
+                        offset={-80}
+                        className={`block font-medium cursor-pointer px-4 py-3 rounded-xl transition-all duration-300 ${
+                          activeSection === menu.redirect
+                            ? "text-cyan-200 border border-cyan-300/60 bg-cyan-400/10"
+                            : "text-slate-100 border border-transparent hover:text-white hover:bg-white/5"
+                        }`}
+                      >
+                        {menu.name}
+                      </ScrollLink>
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="flex flex-col gap-2 pt-4">
+                  <a
+                    href="https://github.com/theashutoshpandey"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="border border-cyan-400 bg-transparent text-cyan-300 rounded-full cursor-pointer px-4 py-2.5 text-center text-sm font-medium transition-colors duration-200 hover:bg-cyan-400 hover:text-slate-950"
+                  >
+                    GitHub
+                  </a>
+                  <a
+                    href="https://www.linkedin.com/in/ashutosh-pandey-7b9424221/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="border border-emerald-400 bg-transparent text-emerald-300 rounded-full cursor-pointer px-4 py-2.5 text-center text-sm font-medium transition-colors duration-200 hover:bg-emerald-400 hover:text-slate-950"
+                  >
+                    LinkedIn
+                  </a>
+                </div>
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </React.Fragment>

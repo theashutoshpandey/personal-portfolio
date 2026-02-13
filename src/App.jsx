@@ -11,6 +11,7 @@ import Project from "./components/Project";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import CustomCursor from "./components/CustomCursor";
+import BackToTop from "./components/BackToTop";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
     >
       <CustomCursor />
+      <BackToTop />
       <Navbar />
 
       <div className="bg-[#05070f] w-full overflow-x-hidden relative min-h-screen scroll-smooth">
