@@ -31,7 +31,7 @@ export default function Education() {
       </motion.div>
 
       <div className="w-full max-w-[1100px] px-4">
-        <VerticalTimeline>
+        <VerticalTimeline lineColor="rgba(74, 222, 128, 0.32)">
           {education.map((item, index) => (
             <EducationCard key={`education-${index}`} education={item} />
           ))}

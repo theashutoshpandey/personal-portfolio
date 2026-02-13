@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link as ScrollLink } from "react-scroll";
 import { HiMenu, HiX } from "react-icons/hi";
+import { AnimatePresence, motion } from "framer-motion";
 
 const menuItem = [
   { name: "Home", redirect: "home" },
@@ -13,6 +14,7 @@ const menuItem = [
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
 
   const toggleMenu = () => {
     setIsOpen((prev) => {
@@ -38,17 +40,22 @@ export default function Navbar() {
         </ScrollLink>
 
         {/* Menu Items */}
-        <ul className="gap-6 list-none hidden md:flex">
+        <ul className="gap-2 list-none hidden md:flex items-center">
           {menuItem.map((menu) => (
-            <li key={menu.name}>
+            <li key={menu.name} className="relative">
               <ScrollLink
                 to={menu.redirect}
                 spy={true}
                 smooth={true}
                 offset={-80}
                 duration={500}
-                activeClass="text-cyan-300 border-b-2 border-cyan-400"
-                className="text-white font-medium hover:text-cyan-300 transition-colors duration-300 cursor-pointer pb-1"
+                onSetActive={() => setActiveSection(menu.redirect)}
+                onClick={() => setActiveSection(menu.redirect)}
+                className={`relative z-10 font-medium transition-all duration-300 cursor-pointer px-2 py-2 border-b-2 ${
+                  activeSection === menu.redirect
+                    ? "text-cyan-200 border-cyan-300"
+                    : "text-slate-200 border-transparent hover:text-white hover:border-cyan-400/70"
+                }`}
               >
                 {menu.name}
               </ScrollLink>
@@ -83,18 +90,34 @@ export default function Navbar() {
         </div>
       </div>
 
-      {isOpen && (
-        <div className="md:hidden px-4 pb-5 bg-[#070b14]/95 backdrop-blur-md relative z-50">
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="md:hidden px-4 pb-5 bg-[#070b14]/95 backdrop-blur-md relative z-50 border-b border-white/10"
+          >
           <ul className="flex flex-col gap-4">
             {menuItem.map((menu) => (
               <li key={menu.name}>
                 <ScrollLink
                   to={menu.redirect}
-                  onClick={() => setIsOpen(false)}
+                  spy={true}
+                  onClick={() => {
+                    setActiveSection(menu.redirect);
+                    setIsOpen(false);
+                  }}
+                  onSetActive={() => setActiveSection(menu.redirect)}
                   smooth={true}
                   duration={500}
                   offset={-80}
-                  className="block text-white font-medium hover:text-cyan-300 cursor-pointer"
+                  className={`block font-medium cursor-pointer px-3 py-2 rounded-lg transition-all duration-300 ${
+                    activeSection === menu.redirect
+                      ? "text-cyan-200 border-l-2 border-cyan-300 bg-cyan-400/10"
+                      : "text-slate-100 hover:text-white hover:bg-white/5"
+                  }`}
                 >
                   {menu.name}
                 </ScrollLink>
@@ -121,8 +144,9 @@ export default function Navbar() {
               </a>
             </div>
           </ul>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </React.Fragment>
   );
 }

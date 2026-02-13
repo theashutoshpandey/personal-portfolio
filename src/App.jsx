@@ -1,4 +1,5 @@
 import React from "react"
+import { MotionConfig } from "framer-motion";
 import "./App.css";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
@@ -14,7 +15,10 @@ import CustomCursor from "./components/CustomCursor";
 function App() {
   return (
 
-    <React.Fragment>
+    <MotionConfig
+      reducedMotion="user"
+      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+    >
       <CustomCursor />
       <Navbar />
 
@@ -59,7 +63,7 @@ function App() {
           <Footer />
         </div>
       </div>
-    </React.Fragment>
+    </MotionConfig>
   );
 }
 

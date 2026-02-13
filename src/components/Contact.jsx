@@ -1,4 +1,4 @@
-import React, { useRef, useState, useTransition } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import "react-vertical-timeline-component/style.min.css";
 import { motion } from "framer-motion";
 
@@ -44,12 +44,70 @@ const contactConfig = {
   ],
 };
 
+const SUBMISSION_LIMIT = 3;
+const SUBMISSION_STORAGE_KEY = "portfolio_contact_submission_count_v1";
+const formItemVariants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: { opacity: 1, y: 0 },
+};
+
+const getTodayStamp = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
 export default function Contact() {
   const formRef = useRef();
   const [error, setError] = useState(null);
   const [done, setDone] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isPending, startTransition] = useTransition();
+  const [submissionCount, setSubmissionCount] = useState(0);
+
+  const remainingSubmissions = useMemo(
+    () => Math.max(SUBMISSION_LIMIT - submissionCount, 0),
+    [submissionCount]
+  );
+  const hasReachedLimit = remainingSubmissions === 0;
+
+  useEffect(() => {
+    try {
+      const rawValue = localStorage.getItem(SUBMISSION_STORAGE_KEY);
+      const today = getTodayStamp();
+
+      if (!rawValue) {
+        setSubmissionCount(0);
+        return;
+      }
+
+      const parsedValue = JSON.parse(rawValue);
+      if (parsedValue?.date === today && Number.isInteger(parsedValue?.count)) {
+        setSubmissionCount(parsedValue.count);
+      } else {
+        setSubmissionCount(0);
+        localStorage.setItem(
+          SUBMISSION_STORAGE_KEY,
+          JSON.stringify({ date: today, count: 0 })
+        );
+      }
+    } catch (storageError) {
+      console.warn("Unable to read local submission count", storageError);
+    }
+  }, []);
+
+  const persistSubmissionCount = (nextCount) => {
+    setSubmissionCount(nextCount);
+    try {
+      localStorage.setItem(
+        SUBMISSION_STORAGE_KEY,
+        JSON.stringify({ date: getTodayStamp(), count: nextCount })
+      );
+    } catch (storageError) {
+      console.warn("Unable to save local submission count", storageError);
+    }
+  };
 
   const validateForm = () => {
     const form = formRef.current;
@@ -87,6 +145,12 @@ export default function Contact() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (hasReachedLimit) {
+      setError("Daily submission limit reached. Please try again tomorrow.");
+      return;
+    }
+
     if (!validateForm()) {
       return;
     }
@@ -107,10 +171,9 @@ export default function Contact() {
       });
 
       formRef.current.reset();
-
-      startTransition(() => {
-        setDone(true);
-      });
+      const nextCount = submissionCount + 1;
+      persistSubmissionCount(nextCount);
+      setDone(true);
     } catch (err) {
       console.log("error on form submission", err);
       setError("Something went wrong. Please try again.");
@@ -121,6 +184,11 @@ export default function Contact() {
 
   const handleInputChange = () => {
     if (done) setDone(false);
+  };
+
+  const handleFlipBack = () => {
+    setDone(false);
+    setError(null);
   };
 
   return (
@@ -158,65 +226,128 @@ export default function Contact() {
           viewport={{ once: true }}
           className="flex justify-center"
         >
-          <div className="glass-effect rounded-2xl p-5 sm:p-6 md:p-7 w-full max-w-xl mx-auto">
-            <h4 className="text-xl font-semibold text-white mb-4 text-left">
-              Send a message
-            </h4>
-
-            <form
-              ref={formRef}
-              onSubmit={handleSubmit}
-              className="flex flex-col gap-5 w-full"
+          <div className="w-full max-w-xl mx-auto [perspective:1200px]">
+            <motion.div
+              animate={{ rotateY: done ? 180 : 0 }}
+              transition={{ duration: 0.7, ease: "easeInOut" }}
+              style={{ transformStyle: "preserve-3d" }}
+              className="relative min-h-[640px] sm:min-h-[620px]"
             >
-              {contactConfig.fields.map((field) => (
-                <div key={field.id} className="flex flex-col gap-2">
-                  <label
-                    htmlFor={field.id}
-                    className="text-sm font-medium text-slate-200"
-                  >
-                    {field.label}
-                  </label>
-                  {field.component === "textarea" ? (
-                    <textarea
-                      id={field.id}
-                      name={field.name}
-                      rows={field.rows || 4}
-                      placeholder={field.placeholder}
-                      required
-                      onChange={handleInputChange}
-                      className="bg-transparent border border-white/15 text-white px-3 py-3 rounded-lg placeholder:text-slate-400 focus:border-cyan-300 focus:ring-2 focus:ring-cyan-400/40 focus:outline-none transition-colors resize-none"
-                    />
-                  ) : (
-                    <input
-                      id={field.id}
-                      type={field.type}
-                      name={field.name}
-                      placeholder={field.placeholder}
-                      required
-                      onChange={handleInputChange}
-                      className="bg-transparent border border-white/15 text-white px-3 py-3 rounded-lg placeholder:text-slate-400 focus:border-cyan-300 focus:ring-2 focus:ring-cyan-400/40 focus:outline-none transition-colors"
-                    />
-                  )}
-                </div>
-              ))}
+              <div
+                style={{ backfaceVisibility: "hidden" }}
+                className={`absolute inset-0 glass-effect rounded-2xl p-5 sm:p-6 md:p-7 ${
+                  done ? "pointer-events-none" : ""
+                }`}
+              >
+                <h4 className="text-xl font-semibold text-white mb-1 text-left">
+                  Send a message
+                </h4>
+                <p className="text-xs text-slate-300 mb-4">
+                  Please share your details and message.
+                </p>
 
-              <div className="mt-2 min-h-[1.5rem]" aria-live="polite">
-                {error && <p className="text-sm text-red-400">{error}</p>}
-                {!error && done && (
-                  <p className="text-sm text-emerald-300">
-                    Message sent successfully. Thank you for reaching out!
-                  </p>
-                )}
+                <motion.form
+                  ref={formRef}
+                  onSubmit={handleSubmit}
+                  initial="hidden"
+                  animate="visible"
+                  variants={{
+                    hidden: {},
+                    visible: { transition: { staggerChildren: 0.05 } },
+                  }}
+                  className="flex flex-col gap-5 w-full"
+                >
+                  {contactConfig.fields.map((field) => (
+                    <motion.div
+                      key={field.id}
+                      variants={formItemVariants}
+                      transition={{ duration: 0.28, ease: "easeOut" }}
+                      className="flex flex-col gap-2"
+                    >
+                      <label
+                        htmlFor={field.id}
+                        className="text-sm font-medium text-slate-200"
+                      >
+                        {field.label}
+                      </label>
+                      {field.component === "textarea" ? (
+                        <textarea
+                          id={field.id}
+                          name={field.name}
+                          rows={field.rows || 4}
+                          placeholder={field.placeholder}
+                          required
+                          onChange={handleInputChange}
+                          className="bg-transparent border border-white/15 text-white px-3 py-3 rounded-lg placeholder:text-slate-400 focus:border-cyan-300 focus:ring-2 focus:ring-cyan-400/40 focus:outline-none transition-colors resize-none"
+                        />
+                      ) : (
+                        <input
+                          id={field.id}
+                          type={field.type}
+                          name={field.name}
+                          placeholder={field.placeholder}
+                          required
+                          onChange={handleInputChange}
+                          className="bg-transparent border border-white/15 text-white px-3 py-3 rounded-lg placeholder:text-slate-400 focus:border-cyan-300 focus:ring-2 focus:ring-cyan-400/40 focus:outline-none transition-colors"
+                        />
+                      )}
+                    </motion.div>
+                  ))}
+
+                  <motion.div
+                    variants={formItemVariants}
+                    transition={{ duration: 0.25, ease: "easeOut" }}
+                    className="mt-2 min-h-[1.5rem]"
+                    aria-live="polite"
+                  >
+                    {error && <p className="text-sm text-red-400">{error}</p>}
+                  </motion.div>
+
+                  <motion.button
+                    type="submit"
+                    disabled={isSubmitting || hasReachedLimit}
+                    variants={formItemVariants}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    whileHover={
+                      isSubmitting || hasReachedLimit ? {} : { y: -1, scale: 1.01 }
+                    }
+                    whileTap={isSubmitting || hasReachedLimit ? {} : { scale: 0.99 }}
+                    className="mt-1 inline-flex items-center justify-center bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 px-7 py-3 cursor-pointer rounded-full text-sm font-semibold shadow-[0_8px_30px_rgba(34,211,238,0.35)] transition duration-200 disabled:opacity-60 disabled:cursor-not-allowed hover:from-cyan-300 hover:to-emerald-300 w-full"
+                  >
+                    {isSubmitting
+                      ? "Sending..."
+                      : hasReachedLimit
+                        ? "Try again tomorrow"
+                        : contactConfig.buttonLabel}
+                  </motion.button>
+                </motion.form>
               </div>
 
-              <button
-                type="submit"
-                disabled={isSubmitting || isPending}
-                className="mt-1 inline-flex items-center justify-center bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 px-7 py-3 cursor-pointer rounded-full text-sm font-semibold shadow-[0_8px_30px_rgba(34,211,238,0.35)] transition duration-200 disabled:opacity-60 disabled:cursor-not-allowed hover:from-cyan-300 hover:to-emerald-300 w-full sm:w-auto"
+              <div
+                style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
+                className="absolute inset-0 glass-effect rounded-2xl p-5 sm:p-6 md:p-7 flex flex-col justify-center items-center text-center"
               >
-                {isSubmitting ? "Sending..." : contactConfig.buttonLabel}
-              </button>
-            </form>
+                <div className="h-16 w-16 rounded-full bg-emerald-400/20 border border-emerald-300/40 flex items-center justify-center text-xl font-bold text-emerald-200 shadow-[0_0_24px_rgba(52,211,153,0.25)] mb-4">
+                  OK
+                </div>
+                <h4 className="text-2xl font-semibold text-white mb-2">Message sent</h4>
+                <p className="text-slate-300 text-sm mb-5 max-w-sm">
+                  Thanks for reaching out. Your message has been submitted successfully.
+                </p>
+                <p className="text-xs text-emerald-200 mb-6">
+                  I will get back to you shortly.
+                </p>
+
+                <button
+                  type="button"
+                  onClick={handleFlipBack}
+                  disabled={hasReachedLimit}
+                  className="inline-flex items-center justify-center bg-white/10 text-white px-6 py-2.5 cursor-pointer rounded-full text-sm font-medium border border-white/20 transition duration-200 disabled:opacity-60 disabled:cursor-not-allowed hover:bg-white/15"
+                >
+                  {hasReachedLimit ? "Max submissions used" : "Send another"}
+                </button>
+              </div>
+            </motion.div>
           </div>
         </motion.div>
       </div>

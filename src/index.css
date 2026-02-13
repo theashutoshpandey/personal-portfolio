@@ -91,3 +91,41 @@ h4,
     0 8px 32px rgba(2, 8, 23, 0.55),
     inset 0 0 0 1px rgba(255, 255, 255, 0.04);
 }
+
+.timeline-exp-card .vertical-timeline-element-content,
+.timeline-edu-card .vertical-timeline-element-content {
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.timeline-exp-card .vertical-timeline-element-icon,
+.timeline-edu-card .vertical-timeline-element-icon {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.timeline-exp-card:hover .vertical-timeline-element-content {
+  border-color: rgba(103, 232, 249, 0.75) !important;
+  box-shadow:
+    0 0 0 1px rgba(34, 211, 238, 0.35),
+    0 10px 32px rgba(2, 8, 23, 0.65),
+    0 12px 28px rgba(34, 211, 238, 0.14) !important;
+}
+
+.timeline-exp-card:hover .vertical-timeline-element-icon {
+  transform: scale(1.06);
+  border-color: rgba(34, 211, 238, 0.7) !important;
+  box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.16) !important;
+}
+
+.timeline-edu-card:hover .vertical-timeline-element-content {
+  border-color: rgba(110, 231, 183, 0.75) !important;
+  box-shadow:
+    0 0 0 1px rgba(74, 222, 128, 0.35),
+    0 10px 32px rgba(2, 8, 23, 0.65),
+    0 12px 28px rgba(74, 222, 128, 0.14) !important;
+}
+
+.timeline-edu-card:hover .vertical-timeline-element-icon {
+  transform: scale(1.06);
+  border-color: rgba(74, 222, 128, 0.7) !important;
+  box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.16) !important;
+}

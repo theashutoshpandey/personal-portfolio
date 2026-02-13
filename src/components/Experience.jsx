@@ -30,12 +30,9 @@ export default function Experience() {
         </p>
       </motion.div>
       <div className="w-full max-w-[1100px] px-4">
-        <VerticalTimeline>
+        <VerticalTimeline lineColor="rgba(34, 211, 238, 0.35)">
           {experiences.map((experience, index) => (
-            <ExperienceCard
-              key={`experience-${index}`}
-              experience={experience}
-            />
+            <ExperienceCard key={`experience-${index}`} experience={experience} />
           ))}
         </VerticalTimeline>
       </div>
