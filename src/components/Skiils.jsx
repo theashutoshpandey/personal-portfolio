@@ -1,6 +1,5 @@
 import React from "react";
 import { skills } from "../data/constants";
-import { Tilt } from "react-tilt";
 import { motion } from "framer-motion";
 
 export default function Skills() {
@@ -30,13 +29,12 @@ export default function Skills() {
 
       <div className="w-full max-w-[1100px] flex flex-wrap justify-between gap-6 px-4">
         {skills.map((category, idx) => (
-          <Tilt key={idx} className="w-full sm:w-[48%]">
-            <motion.div
+          <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: idx * 0.1 }}
               viewport={{ once: true }}
-              className="bg-[rgba(10,18,36,0.7)] border border-cyan-400/20 shadow-[0_4px_24px_rgba(34,211,238,0.08)] rounded-2xl p-6 transition-all duration-300 hover:shadow-[0_0_28px_rgba(34,211,238,0.35)] hover:border-cyan-300"
+              className="w-full sm:w-[48%] bg-[rgba(10,18,36,0.7)] border border-cyan-400/20 shadow-[0_4px_24px_rgba(34,211,238,0.08)] rounded-2xl p-6 transition-all duration-300 hover:shadow-[0_0_28px_rgba(34,211,238,0.35)] hover:border-cyan-300 hover:-translate-y-1"
             >
               <h4 className="text-xl text-white font-semibold mb-4">
                 {category.title}
@@ -65,7 +63,6 @@ export default function Skills() {
                 ))}
               </div>
             </motion.div>
-          </Tilt>
         ))}
       </div>
     </div>

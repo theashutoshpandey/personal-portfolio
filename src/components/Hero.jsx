@@ -2,7 +2,6 @@ import React from "react";
 import Typewriter from "typewriter-effect";
 import { Bio } from "../data/constants";
 import devPic from "../assets/hero-portrait.png";
-import { Tilt } from "react-tilt";
 import { motion } from "framer-motion";
 import {
   headContainerAnimation,
@@ -76,9 +75,9 @@ export default function Hero() {
 
             <div className="heroRight w-full md:w-1/2 order-1 md:order-2 flex justify-end items-end z-10">
               <motion.div {...headContentAnimation}>
-                <Tilt>
+                <div className="transition-transform duration-300 ease-out hover:scale-[1.02] hover:-rotate-1">
                   <img src={devPic} alt="Ashutosh Pandey" className="w-full" />
-                </Tilt>
+                </div>
               </motion.div>
             </div>
           </div>
