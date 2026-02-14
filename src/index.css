@@ -129,3 +129,161 @@ h4,
   border-color: rgba(74, 222, 128, 0.7) !important;
   box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.16) !important;
 }
+
+@keyframes heroFloat {
+  0% {
+    transform: translateY(-10px);
+  }
+
+  50% {
+    transform: translateY(10px);
+  }
+
+  100% {
+    transform: translateY(-10px);
+  }
+}
+
+.heroCharacterFloat {
+  animation: heroFloat 5.8s ease-in-out infinite;
+  will-change: transform;
+}
+
+.heroCharacterStage {
+  --mag-x: 0px;
+  --mag-y: 0px;
+  --mag-ry: 0deg;
+  --mag-rx: 0deg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 26px;
+  margin-top: -26px;
+  perspective: 1600px;
+  perspective-origin: center;
+}
+
+.heroCharacterFrame {
+  position: relative;
+  width: 427px;
+  height: 505px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  isolation: isolate;
+}
+
+.heroCharacterFrame::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -23px;
+  width: 87%;
+  height: 50px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: radial-gradient(ellipse at center, rgba(0, 240, 255, 0.44) 0%, rgba(0, 240, 255, 0.14) 42%, rgba(0, 240, 255, 0) 82%);
+  filter: blur(15px);
+  opacity: 0.86;
+  z-index: -2;
+  transition: transform 0.62s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.62s ease;
+  pointer-events: none;
+}
+
+.heroCharacterFrame::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -9px;
+  width: 74%;
+  height: 22px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: radial-gradient(ellipse at center, rgba(2, 8, 23, 0.58) 0%, rgba(2, 8, 23, 0.18) 48%, rgba(2, 8, 23, 0) 82%);
+  filter: blur(7px);
+  opacity: 0.92;
+  z-index: -1;
+  transition: transform 0.62s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.62s ease;
+  pointer-events: none;
+}
+
+.heroCharacterCard {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: visible;
+  transform-style: preserve-3d;
+  transform-origin: 50% 78%;
+  transition: transform 0.52s cubic-bezier(0.2, 1, 0.22, 1);
+  filter:
+    drop-shadow(0 14px 24px rgba(2, 8, 23, 0.45))
+    drop-shadow(0 2px 9px rgba(15, 23, 42, 0.24));
+  will-change: transform, filter;
+}
+
+.heroCharacterCard::before {
+  content: "";
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  width: 62%;
+  height: 8%;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: radial-gradient(ellipse at center, rgba(2, 8, 23, 0.42) 0%, rgba(2, 8, 23, 0) 72%);
+  filter: blur(7px);
+  z-index: -1;
+  transition: transform 0.52s cubic-bezier(0.2, 1, 0.22, 1), opacity 0.52s ease;
+  pointer-events: none;
+}
+
+.heroCharacterStage:hover .heroCharacterCard {
+  transform:
+    translateX(calc(4px + var(--mag-x)))
+    translateY(calc(-20px + var(--mag-y)))
+    scale(1.05)
+    rotateY(calc(-6deg + var(--mag-ry)))
+    rotateX(calc(2deg + var(--mag-rx)))
+    translateZ(16px);
+  filter:
+    drop-shadow(0 14px 24px rgba(2, 8, 23, 0.45))
+    drop-shadow(0 2px 9px rgba(15, 23, 42, 0.24));
+}
+
+.heroCharacterStage:hover .heroCharacterCard::before {
+  transform: translateX(-50%) scale(1.15);
+  opacity: 0.75;
+}
+
+.heroCharacterStage:hover .heroCharacterFrame::before {
+  transform: translateX(-50%) scale(1.16);
+  opacity: 1;
+}
+
+.heroCharacterStage:hover .heroCharacterFrame::after {
+  transform: translateX(-50%) scale(1.12);
+  opacity: 1;
+}
+
+.heroCharacterImage {
+  width: 427px;
+  height: 505px;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  transform: translate3d(0, 0, 0);
+  transition: transform 0.52s cubic-bezier(0.2, 1, 0.22, 1);
+  backface-visibility: hidden;
+  filter: none;
+}
+
+.heroCharacterStage:hover .heroCharacterImage {
+  transform:
+    translateX(calc(var(--mag-x) * 0.35))
+    translateY(calc(-8px + var(--mag-y) * 0.35));
+  filter: none;
+}

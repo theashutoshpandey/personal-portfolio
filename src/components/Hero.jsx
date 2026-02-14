@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import Typewriter from "typewriter-effect";
 import { Bio } from "../data/constants";
 import devPic from "../assets/hero-portrait.png";
@@ -12,6 +12,35 @@ import StyledStarCanvas from "./canvas/star";
 import HeroBgAnimation from "../HeroBgAnimation/HeroBgAnimation";
 
 export default function Hero() {
+  const magneticStageRef = useRef(null);
+
+  const handleMagneticMove = (event) => {
+    const stage = magneticStageRef.current;
+    if (!stage) return;
+
+    const rect = stage.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width - 0.5;
+    const y = (event.clientY - rect.top) / rect.height - 0.5;
+
+    const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+    const mx = clamp(x, -0.5, 0.5);
+    const my = clamp(y, -0.5, 0.5);
+
+    stage.style.setProperty("--mag-x", `${mx * 20}px`);
+    stage.style.setProperty("--mag-y", `${my * 12}px`);
+    stage.style.setProperty("--mag-ry", `${mx * 9}deg`);
+    stage.style.setProperty("--mag-rx", `${my * -7}deg`);
+  };
+
+  const handleMagneticLeave = () => {
+    const stage = magneticStageRef.current;
+    if (!stage) return;
+    stage.style.setProperty("--mag-x", "0px");
+    stage.style.setProperty("--mag-y", "0px");
+    stage.style.setProperty("--mag-ry", "0deg");
+    stage.style.setProperty("--mag-rx", "0deg");
+  };
+
   return (
     <React.Fragment>
       <div
@@ -73,10 +102,21 @@ export default function Hero() {
               </motion.div>
             </div>
 
-            <div className="heroRight w-full md:w-1/2 order-1 md:order-2 flex justify-end items-end z-10">
+            <div className="heroRight w-full md:w-1/2 order-1 md:order-2 flex justify-center items-end z-10">
               <motion.div {...headContentAnimation}>
-                <div className="transition-transform duration-300 ease-out hover:scale-[1.02] hover:-rotate-1">
-                  <img src={devPic} alt="Ashutosh Pandey" className="w-full" />
+                <div className="heroCharacterFloat">
+                  <div
+                    ref={magneticStageRef}
+                    className="heroCharacterStage"
+                    onMouseMove={handleMagneticMove}
+                    onMouseLeave={handleMagneticLeave}
+                  >
+                    <div className="heroCharacterFrame">
+                      <div className="heroCharacterCard">
+                        <img src={devPic} alt="Ashutosh Pandey" className="heroCharacterImage" />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             </div>
