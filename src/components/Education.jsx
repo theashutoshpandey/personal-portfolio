@@ -25,7 +25,7 @@ export default function Education() {
         <h3 className="text-3xl md:text-4xl font-display font-bold text-white mb-3">
           Education
         </h3>
-        <p className="text-md md:text-lg text-slate-300 pb-6">
+        <p className="text-md md:text-lg text-slate-200 pb-6">
           An overview of my academic background and qualifications.
         </p>
       </motion.div>

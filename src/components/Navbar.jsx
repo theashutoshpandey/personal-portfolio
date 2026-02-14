@@ -47,7 +47,7 @@ export default function Navbar() {
           smooth={true}
           duration={500}
           offset={-80}
-          className="text-white text-2xl font-semibold tracking-wide whitespace-nowrap cursor-pointer font-display"
+          className="text-white text-lg sm:text-xl md:text-2xl font-semibold tracking-wide whitespace-nowrap cursor-pointer font-display"
         >
           Ashutosh Pandey
         </ScrollLink>

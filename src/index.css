@@ -287,3 +287,99 @@ h4,
     translateY(calc(-8px + var(--mag-y) * 0.35));
   filter: none;
 }
+
+.angledSection {
+  background-image:
+    linear-gradient(35deg, rgba(34, 211, 238, 0.14) 0%, rgba(34, 211, 238, 0) 55%),
+    linear-gradient(140deg, rgba(74, 222, 128, 0.16) 0%, rgba(74, 222, 128, 0) 65%);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 30% 98%, 0 100%);
+}
+
+@media (max-width: 1024px) {
+  .heroCharacterFrame {
+    width: min(82vw, 360px);
+    height: auto;
+    aspect-ratio: 427 / 505;
+  }
+
+  .heroCharacterImage {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    cursor: auto;
+  }
+
+  a,
+  button,
+  input,
+  textarea {
+    cursor: auto;
+  }
+
+  .angledSection {
+    clip-path: none;
+  }
+
+  .heroContainer {
+    padding-top: 0.75rem;
+    padding-bottom: 2.25rem;
+  }
+
+  .heroInner {
+    gap: 1.25rem;
+  }
+
+  .heroCharacterFloat {
+    animation-duration: 6.4s;
+  }
+
+  .heroCharacterStage {
+    padding-top: 0;
+    margin-top: 0;
+    perspective: 1200px;
+  }
+
+  .heroCharacterFrame {
+    width: min(84vw, 320px);
+  }
+
+  .heroCharacterFrame::before {
+    bottom: -18px;
+    width: 92%;
+    height: 42px;
+  }
+
+  .heroCharacterFrame::after {
+    bottom: -7px;
+    width: 78%;
+    height: 18px;
+  }
+
+  .heroCharacterStage:hover .heroCharacterCard {
+    transform: none;
+  }
+
+  .heroCharacterStage:hover .heroCharacterImage {
+    transform: none;
+  }
+
+  .vertical-timeline-element-content {
+    padding: 18px !important;
+  }
+
+  .vertical-timeline-element-date {
+    display: inline-block !important;
+    float: none !important;
+    margin-top: 10px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroCharacterFrame {
+    width: min(88vw, 290px);
+  }
+}

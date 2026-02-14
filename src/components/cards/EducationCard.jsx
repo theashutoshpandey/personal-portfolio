@@ -21,10 +21,10 @@ export default function EducationCard({ education }) {
       }
       contentStyle={{
         background:
-          "radial-gradient(circle at top right, rgba(74,222,128,0.16), rgba(8,16,30,0.92) 46%)",
+          "radial-gradient(circle at top right, rgba(74,222,128,0.14), rgba(5,10,22,0.97) 46%)",
         color: "#fff",
-        boxShadow: "0 10px 32px rgba(2, 8, 23, 0.65)",
-        border: "1px solid rgba(74, 222, 128, 0.24)",
+        boxShadow: "0 12px 34px rgba(2, 8, 23, 0.72)",
+        border: "1px solid rgba(74, 222, 128, 0.32)",
         borderRadius: "18px",
         padding: "24px",
       }}
@@ -32,7 +32,7 @@ export default function EducationCard({ education }) {
         borderRight: "7px solid rgba(74, 222, 128, 0.38)",
       }}
       date={
-        <span className="text-sm md:text-base text-emerald-200/90 font-medium">
+        <span className="inline-flex items-center rounded-full border border-emerald-300/45 bg-emerald-400/12 px-3 py-1 text-xs md:text-sm text-emerald-100 font-semibold shadow-[0_0_10px_rgba(74,222,128,0.2)]">
           {education.date}
         </span>
       }
@@ -41,19 +41,21 @@ export default function EducationCard({ education }) {
         <div className="inline-flex items-center rounded-full border border-emerald-300/35 bg-emerald-400/10 px-3 py-1 text-[11px] tracking-[0.15em] uppercase text-emerald-200 mb-3 transition-colors duration-300">
           Education
         </div>
-        <div className="text-lg md:text-lg font-semibold text-slate-200">
+        <div className="text-lg md:text-lg font-semibold text-slate-50">
           {education.college}
         </div>
-        <div className="text-md md:text-md text-slate-300">{education.degree}</div>
+        <div className="text-md md:text-md text-slate-100/95 font-medium">{education.degree}</div>
 
         {education?.grade && (
           <div className="mt-3 flex flex-wrap gap-2 items-center">
-            <span className="font-semibold text-sm text-slate-300">Grade:</span>
-            {education.grade}
+            <span className="font-semibold text-sm text-slate-100">Grade:</span>
+            <span className="text-sm text-emerald-100 bg-emerald-400/12 border border-emerald-300/35 px-3 py-1 rounded-full">
+              {education.grade}
+            </span>
           </div>
         )}
         {education.desc && (
-          <p className="mt-2 text-sm md:text-base text-left text-slate-400">
+          <p className="mt-2 text-sm md:text-base text-left text-slate-100/95 leading-relaxed">
             {education.desc}
           </p>
         )}

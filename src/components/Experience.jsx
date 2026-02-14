@@ -24,7 +24,7 @@ export default function Experience() {
         <h3 className="text-3xl md:text-4xl font-display font-bold text-white mb-3">
           Experience
         </h3>
-        <p className="text-md md:text-lg text-slate-300">
+        <p className="text-md md:text-lg text-slate-200">
           A look at the companies I have worked with and the impactful roles I
           have taken on.
         </p>

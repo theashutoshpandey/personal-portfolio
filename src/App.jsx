@@ -32,32 +32,14 @@ function App() {
         <div>
           <Hero />
 
-          <div
-            className="w-full pb-16"
-            style={{
-              backgroundImage: `
-        linear-gradient(35deg, rgba(34,211,238,0.14) 0%, rgba(34,211,238,0) 55%),
-        linear-gradient(140deg, rgba(74,222,128,0.16) 0%, rgba(74,222,128,0) 65%)
-      `,
-              clipPath: 'polygon(0 0, 100% 0, 100% 100%, 30% 98%, 0 100%)',
-            }}
-          >
+          <div className="angledSection w-full pb-16">
             <Skiils />
             <Experience />
           </div>
 
           <Project />
 
-          <div
-            className="w-full pb-16"
-            style={{
-              backgroundImage: `
-        linear-gradient(35deg, rgba(34,211,238,0.14) 0%, rgba(34,211,238,0) 55%),
-        linear-gradient(140deg, rgba(74,222,128,0.16) 0%, rgba(74,222,128,0) 65%)
-      `,
-              clipPath: 'polygon(0 0, 100% 0, 100% 100%, 30% 98%, 0 100%)',
-            }}
-          >
+          <div className="angledSection w-full pb-16">
             <Education />
             <Contact />
           </div>
